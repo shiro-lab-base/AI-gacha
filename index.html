@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>職業ガチャバトルカード</title>
+
+<style>
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+body{
+
+  margin:0;
+
+  min-height:100vh;
+
+  font-family:
+
+    -apple-system,
+
+    BlinkMacSystemFont,
+
+    "Hiragino Sans",
+
+    "Yu Gothic",
+
+    sans-serif;
+
+  background:
+
+    radial-gradient(circle at top,#332000 0%,#111 35%,#050505 100%);
+
+  color:#fff;
+
+}
+
+.wrap{
+
+  width:min(92%,620px);
+
+  margin:auto;
+
+  padding:50px 0 60px;
+
+}
+
+.title{
+
+  text-align:center;
+
+  font-size:36px;
+
+  line-height:1.25;
+
+  font-weight:900;
+
+  color:#f4cf70;
+
+  text-shadow:0 0 15px rgba(255,190,50,.4);
+
+}
+
+.catch{
+
+  text-align:center;
+
+  font-size:20px;
+
+  font-weight:800;
+
+  margin:12px 0 35px;
+
+}
+
+.catch span{
+
+  color:#f2bd43;
+
+}
+
+.box{
+
+  background:rgba(15,15,15,.94);
+
+  border:1px solid #7a5a24;
+
+  border-radius:20px;
+
+  padding:24px;
+
+}
+
+.description{
+
+  text-align:center;
+
+  line-height:1.9;
+
+  color:#ddd;
+
+  margin-bottom:25px;
+
+}
+
+button{
+
+  width:100%;
+
+  border:0;
+
+  border-radius:14px;
+
+  padding:19px;
+
+  font-size:21px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+}
+
+.gacha{
+
+  background:
+
+    linear-gradient(135deg,#8a4c00,#f2c14e,#8a4c00);
+
+  color:#111;
+
+  box-shadow:
+
+    0 5px 25px rgba(255,184,50,.25);
+
+}
+
+.howto{
+
+  margin-top:30px;
+
+  padding-top:22px;
+
+  border-top:1px solid #444;
+
+}
+
+.howto h2{
+
+  text-align:center;
+
+  color:#f4cf70;
+
+  font-size:18px;
+
+}
+
+.step{
+
+  margin:13px 0;
+
+  color:#ddd;
+
+}
+
+.number{
+
+  display:inline-flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  width:28px;
+
+  height:28px;
+
+  border-radius:50%;
+
+  background:#8d1717;
+
+  margin-right:8px;
+
+  font-weight:900;
+
+}
+
+.note{
+
+  margin-top:25px;
+
+  color:#888;
+
+  font-size:12px;
+
+  text-align:center;
+
+  line-height:1.7;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="title">
+
+    職業ガチャ<br>
+
+    バトルカード
+
+  </div>
+
+  <div class="catch">
+
+    回して、貼って、<span>生成する。</span>
+
+  </div>
+
+  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+
+  <div class="box">
+
+    <div class="description">
+
+      職業・ステータス・レアリティをガチャで抽選。<br>
+
+      結果入りプロンプトをコピーして、<br>
+
+      AIに自分の写真と一緒に貼るだけ。
+
+    </div>
+
+    <button class="gacha" id="enterButton">
+
+      🎲 ガチャを回す
+
+    </button>
+
+    <div class="howto">
+
+      <h2>遊び方</h2>
+
+      <div class="step">
+
+        <span class="number">1</span>
+
+        ガチャを回す
+
+      </div>
+
+      <div class="step">
+
+        <span class="number">2</span>
+
+        プロンプトをコピー
+
+      </div>
+
+      <div class="step">
+
+        <span class="number">3</span>
+
+        ChatGPTに貼って自分の写真を添付
+
+      </div>
+
+      <div class="step">
+
+        <span class="number">4</span>
+
+        バトルカード完成
+
+      </div>
+
+    </div>
+
+    <div class="note">
+
+      抽選結果はカードが完成するまでのお楽しみ。
+
+    </div>
+
+  </div>
+
+  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+
+</div>
+
+<script>
+
+document
+
+  .getElementById("enterButton")
+
+  .addEventListener("click", () => {
+
+    /*
+
+      TOPから入った時点で
+
+      前回のガチャ状態をリセット
+
+    */
+
+    sessionStorage.removeItem("battleRolled");
+
+    sessionStorage.removeItem("battlePrompt");
+
+    location.href = "battle.html";
+
+  });
+
+</script>
+
+</body>
+
+</html>
