@@ -210,8 +210,6 @@ button{
 
   </div>
 
-  <!-- 後で広告を入れるならこの辺 -->
-
   <div class="box">
 
     <div class="message" id="message">
@@ -254,12 +252,6 @@ button{
 
 <script>
 
-/* ==================================================
-
-   職業
-
-================================================== */
-
 const JOBS = [
 
   "勇者",
@@ -268,9 +260,11 @@ const JOBS = [
 
   "魔法使い",
 
+  "魔術師",
+
   "僧侶",
 
-  "アサシン",
+  "暗殺者",
 
   "狩人",
 
@@ -278,9 +272,9 @@ const JOBS = [
 
   "召喚士",
 
-  "バーサーカー",
+  "狂戦士",
 
-  "ネクロマンサー",
+  "死霊使い",
 
   "錬金術師",
 
@@ -296,7 +290,35 @@ const JOBS = [
 
   "踊り子",
 
-  "遊び人"
+  "遊び人",
+
+  "聖騎士",
+
+  "忍者",
+
+  "銃射手",
+
+  "海賊",
+
+  "拳闘士",
+
+  "薬師",
+
+  "探偵",
+
+  "執事",
+
+  "侍女",
+
+  "軍人",
+
+  "盗賊",
+
+  "バニーガール",
+
+  "獣使い",
+
+  "侍"
 
 ];
 
@@ -310,7 +332,9 @@ const HIDDEN_JOBS = [
 
   "無職",
 
-  "神"
+  "神",
+
+  "宇宙人"
 
 ];
 
@@ -332,17 +356,9 @@ const STAT_NAMES = [
 
 ];
 
-/* ==================================================
-
-   乱数
-
-================================================== */
-
 function randomUint32(){
 
-  const array =
-
-    new Uint32Array(1);
+  const array = new Uint32Array(1);
 
   crypto.getRandomValues(array);
 
@@ -360,7 +376,7 @@ function randomInt(min,max){
 
   return Math.floor(
 
-    randomFloat() * (max-min+1)
+    randomFloat() * (max - min + 1)
 
   ) + min;
 
@@ -370,23 +386,11 @@ function choice(array){
 
   return array[
 
-    randomInt(
-
-      0,
-
-      array.length-1
-
-    )
+    randomInt(0,array.length - 1)
 
   ];
 
 }
-
-/* ==================================================
-
-   結果ID
-
-================================================== */
 
 function generateResultId(){
 
@@ -396,25 +400,11 @@ function generateResultId(){
 
   let id = "";
 
-  for(
-
-    let i=0;
-
-    i<8;
-
-    i++
-
-  ){
+  for(let i=0; i<8; i++){
 
     id += chars[
 
-      randomInt(
-
-        0,
-
-        chars.length-1
-
-      )
+      randomInt(0, chars.length - 1)
 
     ];
 
@@ -432,351 +422,133 @@ function generateResultId(){
 
 }
 
-/* ==================================================
-
-   通常ステータス抽選
-
-   1〜4           0.5%
-
-   5〜9           2.5%
-
-   10〜24        50.0%
-
-   25〜49        30.0%
-
-   50〜99        10.0%
-
-   100〜299       6.0%
-
-   300〜999       0.8%
-
-   1000〜9999     0.15%
-
-   10000〜9999999 0.05%
-
-================================================== */
-
 function normalStat(){
 
-  const r =
-
-    randomFloat();
+  const r = randomFloat();
 
   if(r < 0.005){
 
-    return randomInt(
-
-      1,
-
-      4
-
-    );
+    return randomInt(1,4);
 
   }
 
   if(r < 0.030){
 
-    return randomInt(
-
-      5,
-
-      9
-
-    );
+    return randomInt(5,9);
 
   }
 
   if(r < 0.530){
 
-    return randomInt(
-
-      10,
-
-      24
-
-    );
+    return randomInt(10,24);
 
   }
 
   if(r < 0.830){
 
-    return randomInt(
-
-      25,
-
-      49
-
-    );
+    return randomInt(25,49);
 
   }
 
   if(r < 0.930){
 
-    return randomInt(
-
-      50,
-
-      99
-
-    );
+    return randomInt(50,99);
 
   }
 
   if(r < 0.990){
 
-    return randomInt(
-
-      100,
-
-      299
-
-    );
+    return randomInt(100,299);
 
   }
 
   if(r < 0.998){
 
-    return randomInt(
-
-      300,
-
-      999
-
-    );
+    return randomInt(300,999);
 
   }
 
   if(r < 0.9995){
 
-    return randomInt(
-
-      1000,
-
-      9999
-
-    );
+    return randomInt(1000,9999);
 
   }
 
-  /*
-
-    超ジャックポット
-
-    0.05%
-
-  */
-
-  return randomInt(
-
-    10000,
-
-    9999999
-
-  );
+  return randomInt(10000,9999999);
 
 }
-
-/* ==================================================
-
-   極みザコ
-
-   カード全体イベント
-
-   発生率 0.1%
-
-   名称はプロンプトに出さない。
-
-================================================== */
 
 function createExtremeWeakStats(){
 
   const stats = {};
 
-  for(
+  for(const name of STAT_NAMES){
 
-    const name
-
-    of STAT_NAMES
-
-  ){
-
-    stats[name] =
-
-      randomInt(
-
-        1,
-
-        5
-
-      );
+    stats[name] = randomInt(1,5);
 
   }
 
-  const weakCount =
-
-    randomInt(
-
-      1,
-
-      2
-
-    );
+  const weakCount = randomInt(1,2);
 
   const shuffled =
 
-    [...STAT_NAMES]
+    [...STAT_NAMES].sort(
 
-      .sort(
-
-        () => randomFloat() - 0.5
-
-      );
-
-  for(
-
-    let i=0;
-
-    i<weakCount;
-
-    i++
-
-  ){
-
-    stats[
-
-      shuffled[i]
-
-    ] = randomInt(
-
-      0,
-
-      1
+      () => randomFloat() - 0.5
 
     );
+
+  for(let i=0; i<weakCount; i++){
+
+    stats[shuffled[i]] = randomInt(0,1);
 
   }
 
   return stats;
 
 }
-
-/* ==================================================
-
-   極みぶっ壊れ
-
-   カード全体イベント
-
-   発生率 0.1%
-
-   全ステ最低300。
-
-   さらに1〜3項目を大幅強化。
-
-   名称はプロンプトに出さない。
-
-================================================== */
 
 function createExtremeBrokenStats(){
 
   const stats = {};
 
-  for(
+  for(const name of STAT_NAMES){
 
-    const name
-
-    of STAT_NAMES
-
-  ){
-
-    stats[name] =
-
-      randomInt(
-
-        300,
-
-        999
-
-      );
+    stats[name] = randomInt(300,999);
 
   }
 
-  const brokenCount =
-
-    randomInt(
-
-      1,
-
-      3
-
-    );
+  const brokenCount = randomInt(1,3);
 
   const shuffled =
 
-    [...STAT_NAMES]
+    [...STAT_NAMES].sort(
 
-      .sort(
+      () => randomFloat() - 0.5
 
-        () => randomFloat() - 0.5
+    );
 
-      );
+  for(let i=0; i<brokenCount; i++){
 
-  for(
+    const name = shuffled[i];
 
-    let i=0;
-
-    i<brokenCount;
-
-    i++
-
-  ){
-
-    const name =
-
-      shuffled[i];
-
-    const r =
-
-      randomFloat();
+    const r = randomFloat();
 
     if(r < 0.70){
 
-      stats[name] =
-
-        randomInt(
-
-          1000,
-
-          9999
-
-        );
+      stats[name] = randomInt(1000,9999);
 
     }
 
     else if(r < 0.95){
 
-      stats[name] =
-
-        randomInt(
-
-          10000,
-
-          999999
-
-        );
+      stats[name] = randomInt(10000,999999);
 
     }
 
     else{
 
-      stats[name] =
-
-        randomInt(
-
-          1000000,
-
-          9999999
-
-        );
+      stats[name] = randomInt(1000000,9999999);
 
     }
 
@@ -786,55 +558,27 @@ function createExtremeBrokenStats(){
 
 }
 
-/* ==================================================
-
-   職業抽選
-
-   隠し職合計 0.5%
-
-================================================== */
-
 function rollJob(){
 
-  if(
+  if(randomFloat() < 0.005){
 
-    randomFloat() < 0.005
-
-  ){
-
-    return choice(
-
-      HIDDEN_JOBS
-
-    );
+    return choice(HIDDEN_JOBS);
 
   }
 
-  return choice(
-
-    JOBS
-
-  );
+  return choice(JOBS);
 
 }
 
-/* ==================================================
-
-   レアリティ
-
-================================================== */
-
 function getRarity(stats){
 
-  const values =
-
-    Object.values(stats);
+  const values = Object.values(stats);
 
   const total =
 
     values.reduce(
 
-      (a,b) => a+b,
+      (a,b) => a + b,
 
       0
 
@@ -842,85 +586,45 @@ function getRarity(stats){
 
   const max =
 
-    Math.max(
+    Math.max(...values);
 
-      ...values
-
-    );
-
-  if(
-
-    max >= 1000000
-
-  ){
+  if(max >= 1000000){
 
     return "♾️";
 
   }
 
-  if(
-
-    max >= 10000
-
-  ){
+  if(max >= 10000){
 
     return "XR";
 
   }
 
-  if(
-
-    max >= 1000
-
-  ){
+  if(max >= 1000){
 
     return "LR";
 
   }
 
-  if(
-
-    max >= 750 ||
-
-    total >= 1300
-
-  ){
+  if(max >= 750 || total >= 1300){
 
     return "UR";
 
   }
 
-  if(
-
-    max >= 350 ||
-
-    total >= 650
-
-  ){
+  if(max >= 350 || total >= 650){
 
     return "SSR";
 
   }
 
-  if(
-
-    max >= 100 ||
-
-    total >= 300
-
-  ){
+  if(max >= 100 || total >= 300){
 
     return "SR";
 
   }
 
-  if(
-
-    total < 140 &&
-
-    max < 40
-
-  ){
+  if(total < 140 && max < 40){
 
     return "N";
 
@@ -930,23 +634,9 @@ function getRarity(stats){
 
 }
 
-/* ==================================================
-
-   ガチャ本体
-
-   極みぶっ壊れ 0.1%
-
-   極みザコ     0.1%
-
-   通常         99.8%
-
-================================================== */
-
 function rollGacha(){
 
-  const job =
-
-    rollJob();
+  const job = rollJob();
 
   const resultId =
 
@@ -958,11 +648,7 @@ function rollGacha(){
 
   let stats;
 
-  if(
-
-    specialRoll < 0.001
-
-  ){
+  if(specialRoll < 0.001){
 
     stats =
 
@@ -970,11 +656,7 @@ function rollGacha(){
 
   }
 
-  else if(
-
-    specialRoll < 0.002
-
-  ){
+  else if(specialRoll < 0.002){
 
     stats =
 
@@ -986,17 +668,9 @@ function rollGacha(){
 
     stats = {};
 
-    for(
+    for(const name of STAT_NAMES){
 
-      const name
-
-      of STAT_NAMES
-
-    ){
-
-      stats[name] =
-
-        normalStat();
+      stats[name] = normalStat();
 
     }
 
@@ -1004,11 +678,7 @@ function rollGacha(){
 
   const rarity =
 
-    getRarity(
-
-      stats
-
-    );
+    getRarity(stats);
 
   return {
 
@@ -1024,12 +694,6 @@ function rollGacha(){
 
 }
 
-/* ==================================================
-
-   ChatGPT用プロンプト
-
-================================================== */
-
 function createPrompt(result){
 
 return `【職業ガチャバトルカード】
@@ -1042,7 +706,7 @@ return `【職業ガチャバトルカード】
 
 変更・再抽選・交換・再配分・数値補正をせず、そのまま使用してください。
 
-結果ID：${result.resultId}
+ID：${result.resultId}
 
 職業：${result.job}
 
@@ -1068,41 +732,19 @@ HP：${result.stats["HP"]}
 
 添付された人物またはキャラクターを、元の特徴が分かる状態を保ちながら、抽選された職業のバトルキャラクターとして再構築してください。
 
-固有スキルと必殺技は、職業とステータスの高低・偏りを反映して作成してください。
+固有スキルと必殺技は、職業とステータスを反映して作成してください。
 
-効果は、対戦でそのまま判定できる具体的なゲーム効果にしてください。
+効果は対戦でそのまま判定できるよう、ダメージ、回復、ステータス増減、効果ターン数、対象数、使用回数、発動条件、状態異常、クールダウン、代償などを、曖昧表現ではなく具体的な数値で設定してください。
 
-「大ダメージ」
+確率やランダム性を含む効果は、％表記ではなく6面ダイス（D6）の出目で判定してください。
 
-「高確率」
+単純な発動判定は「1D6で4以上なら発動」のように表現してください。
 
-「能力が上昇する」
+ランダム効果は「1〜2：効果A、3〜4：効果B、5：効果C、6：効果D」のような出目分岐も使用できます。
 
-などの曖昧な表現だけで終わらせず、可能な限り以下を具体的に数値化してください。
+固定ダメージ、固定回復、ステータス増減、効果ターン数など、確率を必要としない効果にはダイスを使用しないでください。
 
-・ダメージ量
-
-・回復量
-
-・上昇または低下するステータス値
-
-・上昇または低下する割合
-
-・効果ターン数
-
-・発動確率
-
-・対象数
-
-・使用回数
-
-・発動条件
-
-・状態異常
-
-・クールダウン
-
-・代償
+ダイス判定は必要な効果にだけ使用し、過剰に多用しないでください。
 
 固有スキル：
 
@@ -1114,13 +756,7 @@ HP：${result.stats["HP"]}
 
 1回の行動として処理できる明確な技にしてください。
 
-ダメージ、回復、バフ、デバフ、状態異常、追加行動、クールダウン、代償などを必要に応じて具体的な数値で設定してください。
-
-ステータスの中に極端に高い値または極端に低い値がある場合は、その偏りを固有スキルまたは必殺技の効果に自然に反映してください。
-
-ただし、元のステータス値そのものを変更・補正してはいけません。
-
-カードは縦長の豪華なファンタジーTCG風デザインにしてください。
+カードは豪華なファンタジーTCG風デザインにしてください。
 
 レイアウト：
 
@@ -1134,71 +770,41 @@ HP：${result.stats["HP"]}
 
 ・右下：固有スキル / 必殺技
 
-・右下の最下部：結果ID「${result.resultId}」を小さく読みやすく表示
+・右下の最下部に、ID「${result.resultId}」を小さな英数字のみで表示してください。専用の大きな装飾枠は作らず、カードフレーム内に自然に収めてください。
 
 ・外周：金属的な金装飾、彫刻模様、宝石を使った重厚なファンタジーカードフレーム
 
 人物またはキャラクターは棒立ちではなく、職業・能力・戦闘スタイルが伝わるアクション中の姿にしてください。
 
+市販トレーディングカードとして印刷できる63×88mm比率を基準にしてください。
+
+カード外周には裁断用の黒い塗り足し領域を設け、重要な文字・数値・装飾は裁断位置から十分内側に配置してください。
+
 説明や分析は出力せず、最終画像だけを生成してください。`;
 
 }
 
-/* ==================================================
-
-   画面
-
-================================================== */
-
-let currentPrompt =
-
-  "";
+let currentPrompt = "";
 
 const gachaButton =
 
-  document.getElementById(
-
-    "gachaButton"
-
-  );
+  document.getElementById("gachaButton");
 
 const copyButton =
 
-  document.getElementById(
-
-    "copyButton"
-
-  );
+  document.getElementById("copyButton");
 
 const topButton =
 
-  document.getElementById(
-
-    "topButton"
-
-  );
+  document.getElementById("topButton");
 
 const message =
 
-  document.getElementById(
-
-    "message"
-
-  );
+  document.getElementById("message");
 
 const debug =
 
-  document.getElementById(
-
-    "debug"
-
-  );
-
-/* ==================================================
-
-   すでに抽選済みか確認
-
-================================================== */
+  document.getElementById("debug");
 
 if(
 
@@ -1236,12 +842,6 @@ if(
 
 }
 
-/* ==================================================
-
-   ガチャボタン
-
-================================================== */
-
 gachaButton.addEventListener(
 
   "click",
@@ -1268,11 +868,7 @@ gachaButton.addEventListener(
 
     currentPrompt =
 
-      createPrompt(
-
-        result
-
-      );
+      createPrompt(result);
 
     sessionStorage.setItem(
 
@@ -1308,7 +904,7 @@ gachaButton.addEventListener(
 
     debug.textContent =
 
-`結果ID：${result.resultId}
+`ID：${result.resultId}
 
 職業：${result.job}
 
@@ -1332,12 +928,6 @@ HP：${result.stats["HP"]}
 
 );
 
-/* ==================================================
-
-   プロンプトコピー
-
-================================================== */
-
 copyButton.addEventListener(
 
   "click",
@@ -1352,11 +942,7 @@ copyButton.addEventListener(
 
       ) || currentPrompt;
 
-    if(
-
-      !currentPrompt
-
-    ){
+    if(!currentPrompt){
 
       return;
 
@@ -1415,12 +1001,6 @@ copyButton.addEventListener(
   }
 
 );
-
-/* ==================================================
-
-   TOPへ戻る
-
-================================================== */
 
 topButton.addEventListener(
 
