@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>職業ガチャバトルカード｜ガチャ</title>
+
+<style>
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+body{
+
+  margin:0;
+
+  min-height:100vh;
+
+  font-family:
+
+    -apple-system,
+
+    BlinkMacSystemFont,
+
+    "Hiragino Sans",
+
+    "Yu Gothic",
+
+    sans-serif;
+
+  background:
+
+    radial-gradient(circle at top,#332000 0%,#111 35%,#050505 100%);
+
+  color:#fff;
+
+}
+
+.wrap{
+
+  width:min(92%,620px);
+
+  margin:auto;
+
+  padding:45px 0 60px;
+
+}
+
+.title{
+
+  text-align:center;
+
+  font-size:30px;
+
+  font-weight:900;
+
+  color:#f4cf70;
+
+  margin-bottom:28px;
+
+}
+
+.box{
+
+  background:rgba(15,15,15,.94);
+
+  border:1px solid #7a5a24;
+
+  border-radius:20px;
+
+  padding:24px;
+
+}
+
+button{
+
+  width:100%;
+
+  border:none;
+
+  border-radius:14px;
+
+  padding:18px;
+
+  font-size:19px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+  margin-top:12px;
+
+}
+
+#gachaButton{
+
+  background:
+
+    linear-gradient(135deg,#8a4c00,#f2c14e,#8a4c00);
+
+  color:#111;
+
+}
+
+#copyButton{
+
+  display:none;
+
+  background:#fff;
+
+  color:#111;
+
+}
+
+#topButton{
+
+  display:none;
+
+  background:#262626;
+
+  color:#fff;
+
+  border:1px solid #555;
+
+}
+
+.message{
+
+  text-align:center;
+
+  margin:20px 0;
+
+  min-height:55px;
+
+  line-height:1.7;
+
+}
+
+.ready{
+
+  color:#f4cf70;
+
+  font-size:21px;
+
+  font-weight:900;
+
+}
+
+.note{
+
+  margin-top:22px;
+
+  color:#888;
+
+  text-align:center;
+
+  font-size:12px;
+
+  line-height:1.6;
+
+}
+
+/*
+
+  デバッグ確認用。
+
+  公開中は結果を見せないので非表示。
+
+*/
+
+#debug{
+
+  display:none;
+
+  white-space:pre-wrap;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="title">
+
+    職業ガチャバトルカード
+
+  </div>
+
+  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+
+  <div class="box">
+
+    <div class="message" id="message">
+
+      運命の1枚を引け。
+
+    </div>
+
+    <button id="gachaButton">
+
+      🎲 ガチャを引く
+
+    </button>
+
+    <button id="copyButton">
+
+      📋 プロンプトをコピー
+
+    </button>
+
+    <button id="topButton">
+
+      ← ガチャTOPへ戻る
+
+    </button>
+
+    <div class="note">
+
+      このページでは1回だけ抽選できます。<br>
+
+      もう一度引く場合はTOPへ戻ってください。
+
+    </div>
+
+    <div id="debug"></div>
+
+  </div>
+
+  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+
+</div>
+
+<script>
+
+/* =========================
+
+   職業一覧
+
+========================= */
+
+const JOBS = [
+
+  "勇者",
+
+  "剣士",
+
+  "魔法使い",
+
+  "僧侶",
+
+  "アサシン",
+
+  "狩人",
+
+  "黒騎士",
+
+  "召喚士",
+
+  "バーサーカー",
+
+  "ネクロマンサー",
+
+  "錬金術師",
+
+  "竜騎士",
+
+  "呪術師",
+
+  "賢者",
+
+  "聖女",
+
+  "吟遊詩人",
+
+  "踊り子",
+
+  "遊び人"
+
+];
+
+const HIDDEN_JOBS = [
+
+  "魔王",
+
+  "王様",
+
+  "村の老人",
+
+  "無職",
+
+  "神"
+
+];
+
+const STAT_NAMES = [
+
+  "HP",
+
+  "攻撃力",
+
+  "防御力",
+
+  "魔力",
+
+  "速さ",
+
+  "運",
+
+  "魅力"
+
+];
+
+/* =========================
+
+   乱数
+
+========================= */
+
+function randomUint32(){
+
+  const a =
+
+    new Uint32Array(1);
+
+  crypto.getRandomValues(a);
+
+  return a[0];
+
+}
+
+function randomFloat(){
+
+  return randomUint32() / 4294967296;
+
+}
+
+function randomInt(min,max){
+
+  return Math.floor(
+
+    randomFloat() * (max-min+1)
+
+  ) + min;
+
+}
+
+function choice(array){
+
+  return array[
+
+    randomInt(
+
+      0,
+
+      array.length-1
+
+    )
+
+  ];
+
+}
+
+/* =========================
+
+   ステータス抽選
+
+========================= */
+
+function stat(){
+
+  let n = 0;
+
+  /*
+
+    10が出る限り加算され続ける
+
+    爆発型乱数
+
+  */
+
+  while(true){
+
+    const x =
+
+      randomInt(1,10);
+
+    n += x;
+
+    if(x !== 10){
+
+      break;
+
+    }
+
+  }
+
+  /*
+
+    中倍率ボーナス
+
+  */
+
+  if(randomFloat() < 0.18){
+
+    n *= randomInt(2,4);
+
+  }
+
+  if(randomFloat() < 0.05){
+
+    n *= randomInt(5,10);
+
+  }
+
+  /*
+
+    ジャックポット
+
+  */
+
+  const u = randomFloat();
+
+  if(u < 0.00005){
+
+    n *= randomInt(
+
+      10000,
+
+      100000
+
+    );
+
+  }
+
+  else if(u < 0.0005){
+
+    n *= randomInt(
+
+      1000,
+
+      10000
+
+    );
+
+  }
+
+  else if(u < 0.005){
+
+    n *= randomInt(
+
+      100,
+
+      1000
+
+    );
+
+  }
+
+  return Math.floor(n);
+
+}
+
+/* =========================
+
+   職業抽選
+
+========================= */
+
+function rollJob(){
+
+  /*
+
+    0.5％で隠し職
+
+  */
+
+  if(randomFloat() < 0.005){
+
+    return choice(HIDDEN_JOBS);
+
+  }
+
+  return choice(JOBS);
+
+}
+
+/* =========================
+
+   レアリティ判定
+
+========================= */
+
+function getRarity(stats){
+
+  const values =
+
+    Object.values(stats);
+
+  const total =
+
+    values.reduce(
+
+      (a,b) => a+b,
+
+      0
+
+    );
+
+  const max =
+
+    Math.max(...values);
+
+  if(
+
+    max >= 1000 ||
+
+    total >= 2000
+
+  ){
+
+    return "LR";
+
+  }
+
+  if(
+
+    max >= 300 ||
+
+    total >= 700
+
+  ){
+
+    return "UR";
+
+  }
+
+  if(
+
+    max >= 150 ||
+
+    total >= 350
+
+  ){
+
+    return "SSR";
+
+  }
+
+  if(
+
+    max >= 60 ||
+
+    total >= 180
+
+  ){
+
+    return "SR";
+
+  }
+
+  if(
+
+    max >= 30 ||
+
+    total >= 90
+
+  ){
+
+    return "R";
+
+  }
+
+  return "N";
+
+}
+
+/* =========================
+
+   ガチャ実行
+
+========================= */
+
+function rollGacha(){
+
+  const job =
+
+    rollJob();
+
+  const stats = {};
+
+  for(
+
+    const name
+
+    of STAT_NAMES
+
+  ){
+
+    stats[name] =
+
+      stat();
+
+  }
+
+  const rarity =
+
+    getRarity(stats);
+
+  return {
+
+    job,
+
+    rarity,
+
+    stats
+
+  };
+
+}
+
+/* =========================
+
+   ChatGPT用プロンプト
+
+========================= */
+
+function createPrompt(result){
+
+return `【職業ガチャバトルカード】
+
+添付された人物写真を使用してください。
+
+人物名・キャラクター名は生成・表示しないでください。
+
+以下は外部ガチャで抽選済みの固定結果です。
+
+変更・再抽選・交換・再配分せず、そのまま使用してください。
+
+職業：${result.job}
+
+レアリティ：${result.rarity}
+
+HP：${result.stats["HP"]}
+
+攻撃力：${result.stats["攻撃力"]}
+
+防御力：${result.stats["防御力"]}
+
+魔力：${result.stats["魔力"]}
+
+速さ：${result.stats["速さ"]}
+
+運：${result.stats["運"]}
+
+魅力：${result.stats["魅力"]}
+
+職業イメージとステータスが矛盾していても、その結果を個体差としてそのまま採用してください。
+
+添付人物を、本人だと分かる状態を保ちながら、抽選された職業のバトルキャラクターとして再構築してください。
+
+固有スキルと必殺技は、職業だけではなく、ステータスの高低・偏りを反映してAIが自動作成してください。
+
+対戦カードゲームで実際に戦えそうな内容とし、技名だけでなく効果も表示してください。
+
+固有スキル：
+
+常時効果または条件発動効果。
+
+必殺技：
+
+明確な1アクション。
+
+必要に応じてダメージ量、対象、バフ、デバフ、状態異常、代償などを設定してください。
+
+カードは縦長の豪華なファンタジーTCG風デザインにしてください。
+
+レイアウト：
+
+・左上：職業名を縦書き
+
+・右上：レアリティ
+
+・中央：人物
+
+・左下：HP / 攻撃力 / 防御力 / 魔力 / 速さ / 運 / 魅力
+
+・右下：固有スキル / 必殺技
+
+・外周：金属的な金装飾、彫刻模様、宝石を使った重厚なファンタジーカードフレーム
+
+人物は棒立ちではなく、能力や戦闘スタイルが伝わるアクション中の姿にしてください。
+
+説明や分析は出力せず、最終画像だけを生成してください。`;
+
+}
+
+/* =========================
+
+   画面
+
+========================= */
+
+let currentPrompt = "";
+
+const gachaButton =
+
+  document.getElementById(
+
+    "gachaButton"
+
+  );
+
+const copyButton =
+
+  document.getElementById(
+
+    "copyButton"
+
+  );
+
+const topButton =
+
+  document.getElementById(
+
+    "topButton"
+
+  );
+
+const message =
+
+  document.getElementById(
+
+    "message"
+
+  );
+
+const debug =
+
+  document.getElementById(
+
+    "debug"
+
+  );
+
+/* =========================
+
+   すでに引いたか確認
+
+========================= */
+
+if(
+
+  sessionStorage.getItem(
+
+    "battleRolled"
+
+  ) === "1"
+
+){
+
+  gachaButton.style.display =
+
+    "none";
+
+  copyButton.style.display =
+
+    "block";
+
+  topButton.style.display =
+
+    "block";
+
+  currentPrompt =
+
+    sessionStorage.getItem(
+
+      "battlePrompt"
+
+    ) || "";
+
+  message.innerHTML =
+
+    '<span class="ready">ガチャ完了！</span><br>結果はカードが完成してからのお楽しみ。';
+
+}
+
+/* =========================
+
+   ガチャ実行
+
+========================= */
+
+gachaButton.addEventListener(
+
+  "click",
+
+  () => {
+
+    if(
+
+      sessionStorage.getItem(
+
+        "battleRolled"
+
+      ) === "1"
+
+    ){
+
+      return;
+
+    }
+
+    const result =
+
+      rollGacha();
+
+    currentPrompt =
+
+      createPrompt(result);
+
+    sessionStorage.setItem(
+
+      "battlePrompt",
+
+      currentPrompt
+
+    );
+
+    sessionStorage.setItem(
+
+      "battleRolled",
+
+      "1"
+
+    );
+
+    message.innerHTML =
+
+      '<span class="ready">ガチャ完了！</span><br>結果はカードが完成してからのお楽しみ。';
+
+    gachaButton.style.display =
+
+      "none";
+
+    copyButton.style.display =
+
+      "block";
+
+    /*
+
+      コピーの下にTOPへ戻るボタン
+
+    */
+
+    topButton.style.display =
+
+      "block";
+
+    /*
+
+      デバッグ用
+
+      通常は非表示
+
+    */
+
+    debug.textContent =
+
+`職業：${result.job}
+
+レアリティ：${result.rarity}
+
+HP：${result.stats["HP"]}
+
+攻撃力：${result.stats["攻撃力"]}
+
+防御力：${result.stats["防御力"]}
+
+魔力：${result.stats["魔力"]}
+
+速さ：${result.stats["速さ"]}
+
+運：${result.stats["運"]}
+
+魅力：${result.stats["魅力"]}`;
+
+  }
+
+);
+
+/* =========================
+
+   プロンプトコピー
+
+========================= */
+
+copyButton.addEventListener(
+
+  "click",
+
+  async () => {
+
+    currentPrompt =
+
+      sessionStorage.getItem(
+
+        "battlePrompt"
+
+      ) || currentPrompt;
+
+    if(!currentPrompt){
+
+      return;
+
+    }
+
+    try{
+
+      await navigator.clipboard.writeText(
+
+        currentPrompt
+
+      );
+
+      copyButton.textContent =
+
+        "✓ コピーしました";
+
+    }
+
+    catch{
+
+      const textarea =
+
+        document.createElement(
+
+          "textarea"
+
+        );
+
+      textarea.value =
+
+        currentPrompt;
+
+      document.body.appendChild(
+
+        textarea
+
+      );
+
+      textarea.select();
+
+      document.execCommand(
+
+        "copy"
+
+      );
+
+      textarea.remove();
+
+      copyButton.textContent =
+
+        "✓ コピーしました";
+
+    }
+
+  }
+
+);
+
+/* =========================
+
+   TOPへ戻る
+
+========================= */
+
+topButton.addEventListener(
+
+  "click",
+
+  () => {
+
+    /*
+
+      TOPへ戻る時に
+
+      今回のガチャをリセット
+
+    */
+
+    sessionStorage.removeItem(
+
+      "battleRolled"
+
+    );
+
+    sessionStorage.removeItem(
+
+      "battlePrompt"
+
+    );
+
+    location.href =
+
+      "index.html";
+
+  }
+
+);
+
+</script>
+
+</body>
+
+</html>
