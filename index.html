@@ -144,6 +144,18 @@ button{
 
 }
 
+.verify{
+
+  margin-top:12px;
+
+  background:#262626;
+
+  color:#fff;
+
+  border:1px solid #555;
+
+}
+
 .howto{
 
   margin-top:30px;
@@ -208,6 +220,14 @@ button{
 
 }
 
+.ad-space{
+
+  margin:24px 0;
+
+  min-height:1px;
+
+}
+
 </style>
 
 </head>
@@ -230,7 +250,11 @@ button{
 
   </div>
 
-  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+  <div class="ad-space">
+
+    <!-- 後で忍者AdMaxを入れる -->
+
+  </div>
 
   <div class="box">
 
@@ -247,6 +271,12 @@ button{
     <button class="gacha" id="enterButton">
 
       🎲 ガチャを回す
+
+    </button>
+
+    <button class="verify" id="verifyButton">
+
+      🔎 IDを確認する
 
     </button>
 
@@ -296,7 +326,11 @@ button{
 
   </div>
 
-  <!-- 後で忍者AdMaxを入れるならこの辺 -->
+  <div class="ad-space">
+
+    <!-- 後で忍者AdMaxを入れる -->
+
+  </div>
 
 </div>
 
@@ -321,6 +355,16 @@ document
     sessionStorage.removeItem("battlePrompt");
 
     location.href = "battle.html";
+
+  });
+
+document
+
+  .getElementById("verifyButton")
+
+  .addEventListener("click", () => {
+
+    location.href = "verify.html";
 
   });
 
