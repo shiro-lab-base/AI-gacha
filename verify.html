@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>職業ガチャバトルカード｜ID確認</title>
+
+<style>
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+body{
+
+  margin:0;
+
+  min-height:100vh;
+
+  font-family:
+
+    -apple-system,
+
+    BlinkMacSystemFont,
+
+    "Hiragino Sans",
+
+    "Yu Gothic",
+
+    sans-serif;
+
+  background:
+
+    radial-gradient(
+
+      circle at top,
+
+      #332000 0%,
+
+      #111 35%,
+
+      #050505 100%
+
+    );
+
+  color:#fff;
+
+}
+
+.wrap{
+
+  width:min(92%,620px);
+
+  margin:auto;
+
+  padding:45px 0 60px;
+
+}
+
+.title{
+
+  text-align:center;
+
+  font-size:30px;
+
+  font-weight:900;
+
+  color:#f4cf70;
+
+  margin-bottom:12px;
+
+}
+
+.subtitle{
+
+  text-align:center;
+
+  color:#aaa;
+
+  font-size:14px;
+
+  line-height:1.7;
+
+  margin-bottom:28px;
+
+}
+
+.box{
+
+  background:rgba(15,15,15,.94);
+
+  border:1px solid #7a5a24;
+
+  border-radius:20px;
+
+  padding:24px;
+
+}
+
+input{
+
+  width:100%;
+
+  border:1px solid #6d5527;
+
+  border-radius:12px;
+
+  background:#080808;
+
+  color:#fff;
+
+  padding:17px 16px;
+
+  font-size:20px;
+
+  text-align:center;
+
+  letter-spacing:2px;
+
+  text-transform:uppercase;
+
+  outline:none;
+
+}
+
+input:focus{
+
+  border-color:#f4cf70;
+
+}
+
+button{
+
+  width:100%;
+
+  border:none;
+
+  border-radius:14px;
+
+  padding:18px;
+
+  font-size:18px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+  margin-top:12px;
+
+}
+
+#verifyButton{
+
+  background:
+
+    linear-gradient(
+
+      135deg,
+
+      #8a4c00,
+
+      #f2c14e,
+
+      #8a4c00
+
+    );
+
+  color:#111;
+
+}
+
+#topButton{
+
+  background:#262626;
+
+  color:#fff;
+
+  border:1px solid #555;
+
+}
+
+.message{
+
+  text-align:center;
+
+  min-height:28px;
+
+  margin:18px 0 0;
+
+  line-height:1.6;
+
+}
+
+.error{
+
+  color:#ff7777;
+
+}
+
+.success{
+
+  color:#f4cf70;
+
+  font-weight:900;
+
+}
+
+.result{
+
+  display:none;
+
+  margin-top:24px;
+
+  border-top:1px solid #55431f;
+
+  padding-top:22px;
+
+}
+
+.result-id{
+
+  text-align:center;
+
+  font-size:18px;
+
+  font-weight:900;
+
+  color:#f4cf70;
+
+  margin-bottom:20px;
+
+}
+
+.result-row{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:20px;
+
+  padding:10px 4px;
+
+  border-bottom:1px solid #262626;
+
+}
+
+.result-row span:first-child{
+
+  color:#aaa;
+
+}
+
+.result-row span:last-child{
+
+  font-weight:900;
+
+}
+
+.official{
+
+  margin-top:22px;
+
+  padding:14px;
+
+  border:1px solid #6d5527;
+
+  border-radius:12px;
+
+  text-align:center;
+
+  color:#f4cf70;
+
+  font-size:14px;
+
+  line-height:1.6;
+
+}
+
+.ad-space{
+
+  margin:0 0 24px;
+
+  min-height:1px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="title">
+
+    ID確認
+
+  </div>
+
+  <div class="subtitle">
+
+    カードに表示されているIDから<br>
+
+    正規の抽選結果を確認できます。
+
+  </div>
+
+  <div class="ad-space">
+
+    <!-- 後で広告を設置 -->
+
+  </div>
+
+  <div class="box">
+
+    <input
+
+      id="idInput"
+
+      type="text"
+
+      placeholder="XXXX-XXXX"
+
+      maxlength="9"
+
+      autocomplete="off"
+
+    >
+
+    <button id="verifyButton">
+
+      IDを確認する
+
+    </button>
+
+    <div
+
+      class="message"
+
+      id="message"
+
+    ></div>
+
+    <div
+
+      class="result"
+
+      id="result"
+
+    >
+
+      <div
+
+        class="result-id"
+
+        id="resultId"
+
+      ></div>
+
+      <div class="result-row">
+
+        <span>職業</span>
+
+        <span id="job"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>レアリティ</span>
+
+        <span id="rarity"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>HP</span>
+
+        <span id="hp"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>攻撃力</span>
+
+        <span id="attack"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>防御力</span>
+
+        <span id="defense"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>魔力</span>
+
+        <span id="magic"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>速さ</span>
+
+        <span id="speed"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>運</span>
+
+        <span id="luck"></span>
+
+      </div>
+
+      <div class="result-row">
+
+        <span>魅力</span>
+
+        <span id="charm"></span>
+
+      </div>
+
+      <div class="official">
+
+        このIDは登録済みの正式な抽選結果です。
+
+      </div>
+
+    </div>
+
+    <button id="topButton">
+
+      ← ガチャTOPへ戻る
+
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const API_URL =
+
+  "https://ai-gacha-api.shiro-lab-base.workers.dev";
+
+const idInput =
+
+  document.getElementById("idInput");
+
+const verifyButton =
+
+  document.getElementById("verifyButton");
+
+const topButton =
+
+  document.getElementById("topButton");
+
+const message =
+
+  document.getElementById("message");
+
+const result =
+
+  document.getElementById("result");
+
+verifyButton.addEventListener(
+
+  "click",
+
+  async () => {
+
+    const id =
+
+      idInput.value
+
+        .trim()
+
+        .toUpperCase();
+
+    message.className =
+
+      "message";
+
+    message.textContent =
+
+      "";
+
+    result.style.display =
+
+      "none";
+
+    if(!id){
+
+      message.className =
+
+        "message error";
+
+      message.textContent =
+
+        "IDを入力してください。";
+
+      return;
+
+    }
+
+    verifyButton.disabled =
+
+      true;
+
+    try{
+
+      const response =
+
+        await fetch(
+
+          API_URL +
+
+          "/verify?id=" +
+
+          encodeURIComponent(id)
+
+        );
+
+      const data =
+
+        await response.json();
+
+      if(
+
+        !response.ok ||
+
+        !data.success ||
+
+        !data.result
+
+      ){
+
+        throw new Error(
+
+          data.error ||
+
+          "IDを確認できませんでした"
+
+        );
+
+      }
+
+      const r =
+
+        data.result;
+
+      document.getElementById(
+
+        "resultId"
+
+      ).textContent =
+
+        "ID：" + r.id;
+
+      document.getElementById(
+
+        "job"
+
+      ).textContent =
+
+        r.job;
+
+      document.getElementById(
+
+        "rarity"
+
+      ).textContent =
+
+        r.rarity;
+
+      document.getElementById(
+
+        "hp"
+
+      ).textContent =
+
+        r.stats["HP"];
+
+      document.getElementById(
+
+        "attack"
+
+      ).textContent =
+
+        r.stats["攻撃力"];
+
+      document.getElementById(
+
+        "defense"
+
+      ).textContent =
+
+        r.stats["防御力"];
+
+      document.getElementById(
+
+        "magic"
+
+      ).textContent =
+
+        r.stats["魔力"];
+
+      document.getElementById(
+
+        "speed"
+
+      ).textContent =
+
+        r.stats["速さ"];
+
+      document.getElementById(
+
+        "luck"
+
+      ).textContent =
+
+        r.stats["運"];
+
+      document.getElementById(
+
+        "charm"
+
+      ).textContent =
+
+        r.stats["魅力"];
+
+      message.className =
+
+        "message success";
+
+      message.textContent =
+
+        "照合しました。";
+
+      result.style.display =
+
+        "block";
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+      message.className =
+
+        "message error";
+
+      message.textContent =
+
+        error.message;
+
+    }
+
+    finally{
+
+      verifyButton.disabled =
+
+        false;
+
+    }
+
+  }
+
+);
+
+idInput.addEventListener(
+
+  "keydown",
+
+  event => {
+
+    if(event.key === "Enter"){
+
+      verifyButton.click();
+
+    }
+
+  }
+
+);
+
+topButton.addEventListener(
+
+  "click",
+
+  () => {
+
+    location.href =
+
+      "index.html";
+
+  }
+
+);
+
+</script>
+
+</body>
+
+</html>
